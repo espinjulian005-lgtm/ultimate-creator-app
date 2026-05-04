@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Pipette</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    overflow: hidden; cursor: crosshair;
+    background: #000;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    user-select: none;
+  }
+  #screen {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    image-rendering: -webkit-optimize-contrast;
+    -webkit-user-drag: none;
+  }
+  #zoom {
+    position: fixed;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    pointer-events: none;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 12px 36px rgba(0,0,0,0.7);
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    display: none;
+    z-index: 100;
+  }
+  #zoom-img {
+    position: absolute;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  #zoom-grid {
+    position: absolute;
+    inset: 50%;
+    width: 14px; height: 14px;
+    border: 2px solid #fff;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.7);
+    pointer-events: none;
+  }
+  #info {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 15, 18, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #f4f4f7;
+    padding: 14px 22px;
+    border-radius: 16px;
+    font-size: 13px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    z-index: 50;
+  }
+  #swatch {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+  }
+  #hex {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+  }
+  #rgb {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: #9494a4;
+  }
+  .hint {
+    color: #9494a4;
+    font-size: 12px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255,255,255,0.12);
+  }
+  kbd {
+    background: rgba(255,255,255,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <img id="screen" src="/picker-screenshot" />
+  <div id="zoom">
+    <img id="zoom-img" src="/picker-screenshot" />
+    <div id="zoom-grid"></div>
+  </div>
+  <div id="info">
+    <div id="swatch"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span id="hex">#000000</span>
+      <span id="rgb">rgb(0, 0, 0)</span>
+    </div>
+    <span class="hint"><kbd>Clic</kbd> copier · <kbd>Échap</kbd> annuler</span>
+  </div>
+  <canvas id="canvas" style="display:none"></canvas>
+
+  <script>
+    const screenImg = document.getElementById('screen');
+    const zoom = document.getElementById('zoom');
+    const zoomImg = document.getElementById('zoom-img');
+    const swatch = document.getElementById('swatch');
+    const hexEl = document.getElementById('hex');
+    const rgbEl = document.getElementById('rgb');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    const ZOOM_LEVEL = 8;
+    const ZOOM_SIZE = 180;
+    let imgLoaded = false;
+
+    screenImg.onload = () => {
+      canvas.width = screenImg.naturalWidth;
+      canvas.height = screenImg.naturalHeight;
+      ctx.drawImage(screenImg, 0, 0);
+
+      // Set zoom image to native pixel size × ZOOM_LEVEL for sharp pixels
+      zoomImg.style.width = (screenImg.naturalWidth * ZOOM_LEVEL / (screenImg.naturalWidth / window.innerWidth)) + 'px';
+      zoomImg.style.height = (screenImg.naturalHeight * ZOOM_LEVEL / (screenImg.naturalHeight / window.innerHeight)) + 'px';
+
+      imgLoaded = true;
+    };
+    screenImg.onerror = () => {
+      hexEl.textContent = 'Erreur chargement';
+    };
+
+    function toHex(n) { return n.toString(16).padStart(2, '0'); }
+
+    function pixelAt(clientX, clientY) {
+      // Map viewport coords to canvas pixel coords using the actual screenshot resolution
+      const sx = screenImg.naturalWidth / window.innerWidth;
+      const sy = screenImg.naturalHeight / window.innerHeight;
+      const x = Math.max(0, Math.min(canvas.width - 1, Math.floor(clientX * sx)));
+      const y = Math.max(0, Math.min(canvas.height - 1, Math.floor(clientY * sy)));
+      const d = ctx.getImageData(x, y, 1, 1).data;
+      return {
+        r: d[0], g: d[1], b: d[2],
+        hex: '#' + toHex(d[0]) + toHex(d[1]) + toHex(d[2])
+      };
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (!imgLoaded) return;
+      const c = pixelAt(e.clientX, e.clientY);
+      swatch.style.background = c.hex;
+      hexEl.textContent = c.hex.toUpperCase();
+      rgbEl.textContent = `rgb(${c.r}, ${c.g}, ${c.b})`;
+
+      // Position the loupe above-right of cursor (or below-right near top of screen)
+      zoom.style.display = 'block';
+      const offsetY = e.clientY < 200 ? 100 : -100;
+      zoom.style.left = e.clientX + 'px';
+      zoom.style.top = (e.clientY + offsetY) + 'px';
+
+      // Position zoom-img so the cursor pixel is centered in the loupe
+      const offX = -(e.clientX * ZOOM_LEVEL) + ZOOM_SIZE / 2;
+      const offY = -(e.clientY * ZOOM_LEVEL) + ZOOM_SIZE / 2;
+      zoomImg.style.left = offX + 'px';
+      zoomImg.style.top = offY + 'px';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!imgLoaded) return;
+      const c = pixelAt(e.clientX, e.clientY);
+      window.api.pickerSubmit({ picked: true, ...c });
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') window.api.pickerSubmit({ canceled: true });
+    });
+
+    // Force a zoom-img sizing pass once image is loaded
+    screenImg.addEventListener('load', () => {
+      zoomImg.style.width = (window.innerWidth * ZOOM_LEVEL) + 'px';
+      zoomImg.style.height = (window.innerHeight * ZOOM_LEVEL) + 'px';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Ultimate Creator App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated background (gives glass effect something to refract) -->
+  <div class="bg-stage">
+    <div class="bg-image" id="bgImage" style="background-image: url('background.jpg');" onerror="this.style.display='none'"></div>
+  </div>
+  <div class="aurora">
+    <div class="aurora-blob b1"></div>
+    <div class="aurora-blob b2"></div>
+    <div class="aurora-blob b3"></div>
+    <div class="aurora-blob b4"></div>
+  </div>
+  <div class="bg-grain"></div>
+
+  <div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="logo.png" alt="Ultimate Creator App" onerror="this.style.display='none'" />
+      <div class="brand-text">
+        <span class="brand-name">Ultimate</span>
+        <span class="brand-sub">Creator App</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Accueil</span>
+      </button>
+      <button class="nav-item" data-tab="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Téléchargement</span>
+      </button>
+      <button class="nav-item" data-tab="convert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        <span>Convertisseur</span>
+      </button>
+      <button class="nav-item" data-tab="compress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <span>Compression</span>
+      </button>
+      <button class="nav-item" data-tab="image">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Image</span>
+      </button>
+      <button class="nav-item" data-tab="audio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M7 6v12M11 3v18M15 8v8M19 11v2"/></svg>
+        <span>Audio</span>
+      </button>
+      <button class="nav-item" data-tab="pdf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h6"/></svg>
+        <span>PDF</span>
+      </button>
+      <button class="nav-item" data-tab="picker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg>
+        <span>Pipette</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <label class="toggle-modern" title="Lancer Ultimate Creator au démarrage de Windows">
+        <input type="checkbox" id="autoLaunch" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Démarrage auto</span>
+      </label>
+      <div class="status-pill" id="binStatus">
+        <span class="status-dot"></span>
+        <span class="status-label">Vérification...</span>
+      </div>
+      <button class="help-btn" id="helpBtn" title="Revoir le guide de démarrage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Aide & guide</span>
+      </button>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="globalSearch" class="search-input" placeholder="Rechercher une fonctionnalité (téléchargement, upscale, palette…)" />
+    </div>
+    <div class="topbar-spacer"></div>
+    <button class="topbar-action" id="notifBtn" title="Tâches récentes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="badge" id="notifBadge" hidden></span>
+    </button>
+    <div class="topbar-profile">
+      <div class="profile-avatar">JE</div>
+      <div class="profile-info">
+        <span class="profile-name">Créateur</span>
+        <span class="profile-role">Pro local</span>
+      </div>
+    </div>
+
+    <div class="window-controls" id="windowControls">
+      <button class="wc-btn wc-min" id="wcMin" title="Réduire" aria-label="Réduire">
+        <svg viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+      <button class="wc-btn wc-max" id="wcMax" title="Agrandir" aria-label="Agrandir">
+        <svg class="ic-max" viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <svg class="ic-restore" viewBox="0 0 12 12" hidden><rect x="2.4" y="3.6" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4.4 3.6V2.4h6v6H9.2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="wc-btn wc-close" id="wcClose" title="Fermer" aria-label="Fermer">
+        <svg viewBox="0 0 12 12"><line x1="3" y1="3" x2="9" y2="9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="9" y1="3" x2="3" y2="9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- ============ HOME / DASHBOARD ============ -->
+    <section class="panel active" id="tab-home">
+      <div class="home-hero">
+        <div class="home-hero-content">
+          <div class="hero-text">
+            <h2>Bonjour 👋</h2>
+            <p>Tous les outils pour créer, en local, sans abonnement. Choisis une action ou explore les onglets.</p>
+            <div class="hero-actions">
+              <button class="btn primary" data-quick-action="download">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Télécharger une vidéo
+              </button>
+              <button class="btn ghost" data-quick-action="image">Outils image</button>
+              <button class="btn ghost" data-quick-action="audio">Outils audio</button>
+            </div>
+          </div>
+          <div class="hero-illustration">
+            <img src="logo.png" alt="" onerror="this.style.display='none'" />
+          </div>
+        </div>
+      </div>
+
+      <h3 class="lbl">Actions rapides</h3>
+      <div class="quick-actions">
+        <button class="quick-action" data-quick-action="download">
+          <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          <span class="qa-label">YouTube</span>
+          <span class="qa-sub">Télécharger une vidéo</span>
+        </button>
+        <button class="quick-action" data-quick-action="convert">
+          <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+          <span class="qa-label">Convertir</span>
+          <span class="qa-sub">Tout format → tout format</span>
+        </button>
+        <button class="quick-action" data-quick-action="image">
+          <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+          <span class="qa-label">Image</span>
+          <span class="qa-sub">Détourer, upscaler, OCR</span>
+        </button>
+        <button class="quick-action" data-quick-action="audio">
+          <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M7 6v12M11 3v18M15 8v8M19 11v2"/></svg></span>
+          <span class="qa-label">Audio</span>
+          <span class="qa-sub">Sous-titres, audiogramme</span>
+        </button>
+        <button class="quick-action" data-quick-action="pdf">
+          <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+          <span class="qa-label">PDF</span>
+          <span class="qa-sub">Convertir, fusionner, réorganiser</span>
+        </button>
+        <button class="quick-action" data-quick-action="picker">
+          <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg></span>
+          <span class="qa-label">Pipette</span>
+          <span class="qa-sub">Capturer une couleur écran</span>
+        </button>
+      </div>
+
+      <h3 class="lbl">Statistiques</h3>
+      <div class="stat-grid">
+        <div class="stat-card yellow">
+          <div class="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="stat-label">Téléchargements</div>
+          <div class="stat-value" id="statDl">0</div>
+          <div class="stat-sub">Tous formats confondus</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+          </div>
+          <div class="stat-label">Conversions</div>
+          <div class="stat-value" id="statConv">0</div>
+          <div class="stat-sub">Vidéo / audio / image</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>
+          </div>
+          <div class="stat-label">Images traitées</div>
+          <div class="stat-value" id="statImg">0</div>
+          <div class="stat-sub">Détourage, upscale, OCR</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M7 6v12M11 3v18M15 8v8M19 11v2"/></svg>
+          </div>
+          <div class="stat-label">Pistes audio</div>
+          <div class="stat-value" id="statAudio">0</div>
+          <div class="stat-sub">Sous-titres, audiogramme…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DOWNLOAD ============ -->
+    <section class="panel" id="tab-download">
+      <div class="page-header">
+        <h1>Téléchargement YouTube</h1>
+        <p>Télécharge en MP4, MKV, MP3 et bien plus — toutes qualités jusqu'à 8K, avec tronçon précis.</p>
+      </div>
+      <div class="card">
+        <div class="dl-mode-toggle">
+          <button class="dl-mode-btn active" data-dlmode="single">Une vidéo</button>
+          <button class="dl-mode-btn" data-dlmode="batch">Lot (multi-URLs)</button>
+        </div>
+
+        <div id="dlModeSingle">
+        <label class="lbl">URL YouTube</label>
+        <div class="row">
+          <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." />
+          <button class="btn ghost" id="probeBtn">Analyser</button>
+        </div>
+
+        <div class="info" id="videoInfo" hidden>
+          <img id="thumb" alt="" />
+          <div class="info-meta">
+            <h3 id="vTitle"></h3>
+            <span id="vUploader"></span>
+            <span id="vDuration"></span>
+            <button class="btn ghost small" id="dlThumb">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Télécharger la miniature HD
+            </button>
+          </div>
+        </div>
+
+        <!-- Timeline scrubber -->
+        <div class="timeline-wrap" id="timelineWrap" hidden>
+          <label class="lbl">Aperçu et tronçon</label>
+          <div class="player">
+            <div id="ytPlayer"></div>
+          </div>
+          <div class="timeline" id="timeline">
+            <div class="track-bg"></div>
+            <div class="track-selection" id="trackSelection"></div>
+            <div class="handle handle-start" id="handleStart" data-handle="start">
+              <div class="handle-grip"></div>
+              <div class="handle-time" id="timeStartLabel">00:00</div>
+            </div>
+            <div class="handle handle-end" id="handleEnd" data-handle="end">
+              <div class="handle-grip"></div>
+              <div class="handle-time" id="timeEndLabel">00:00</div>
+            </div>
+          </div>
+          <div class="timeline-actions">
+            <span class="muted">Glisse les poignées orange · Clic sur la timeline pour positionner</span>
+            <button class="btn ghost small" id="resetTrim">Réinitialiser</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label class="lbl">Format</label>
+            <select id="container">
+              <optgroup label="Vidéo">
+                <option value="mp4">MP4 (compatible partout)</option>
+                <option value="mkv">MKV (haute qualité)</option>
+                <option value="webm">WebM</option>
+                <option value="mov">MOV (Apple)</option>
+                <option value="avi">AVI</option>
+              </optgroup>
+              <optgroup label="Audio">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV (sans perte)</option>
+                <option value="flac">FLAC (sans perte)</option>
+                <option value="m4a">M4A (AAC)</option>
+                <option value="opus">Opus</option>
+                <option value="aac">AAC</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div id="qualityWrap">
+            <label class="lbl">Qualité vidéo</label>
+            <select id="quality">
+              <option value="best">Meilleure disponible</option>
+              <option value="4320">8K (4320p)</option>
+              <option value="2160">4K (2160p)</option>
+              <option value="1440">2K (1440p)</option>
+              <option value="1080">1080p Full HD</option>
+              <option value="720">720p HD</option>
+              <option value="480">480p</option>
+              <option value="360">360p</option>
+              <option value="240">240p</option>
+              <option value="144">144p</option>
+            </select>
+          </div>
+
+          <div id="audioBrWrap" hidden>
+            <label class="lbl">Bitrate audio</label>
+            <select id="audioBitrate">
+              <option value="320">320 kbps (max)</option>
+              <option value="256">256 kbps</option>
+              <option value="192" selected>192 kbps</option>
+              <option value="128">128 kbps</option>
+            </select>
+          </div>
+        </div>
+
+        <details class="advanced">
+          <summary>Tronçon manuel (avancé)</summary>
+          <div class="grid">
+            <div>
+              <label class="lbl">Début (hh:mm:ss)</label>
+              <input type="text" id="startTime" placeholder="00:00:00" />
+            </div>
+            <div>
+              <label class="lbl">Fin (hh:mm:ss)</label>
+              <input type="text" id="endTime" placeholder="00:01:30" />
+            </div>
+            <div class="checkrow">
+              <label><input type="checkbox" id="playlist" /> Télécharger la playlist entière</label>
+            </div>
+          </div>
+        </details>
+
+        <div class="row">
+          <input type="text" id="dlOutDir" readonly />
+          <button class="btn ghost" id="pickDlDir">Dossier...</button>
+          <button class="btn primary" id="startDl">Télécharger</button>
+        </div>
+        </div>
+
+        <div id="dlModeBatch" hidden>
+          <label class="lbl">URLs (une par ligne)</label>
+          <textarea id="batchUrls" rows="6" placeholder="https://www.youtube.com/watch?v=...&#10;https://youtu.be/...&#10;https://www.youtube.com/watch?v=..."></textarea>
+          <p class="muted" style="margin: 8px 0 0;">Astuce : tu peux coller la liste depuis n'importe où. Les lignes vides et les commentaires (#) sont ignorés.</p>
+
+          <div class="grid">
+            <div>
+              <label class="lbl">Format</label>
+              <select id="batchContainer">
+                <optgroup label="Vidéo">
+                  <option value="mp4">MP4</option>
+                  <option value="mkv">MKV</option>
+                  <option value="webm">WebM</option>
+                </optgroup>
+                <optgroup label="Audio">
+                  <option value="mp3">MP3</option>
+                  <option value="m4a">M4A</option>
+                  <option value="wav">WAV</option>
+                  <option value="flac">FLAC</option>
+                </optgroup>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Qualité</label>
+              <select id="batchQuality">
+                <option value="best">Meilleure disponible</option>
+                <option value="2160">4K</option>
+                <option value="1440">1440p</option>
+                <option value="1080" selected>1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Téléchargements simultanés</label>
+              <select id="batchConcurrency">
+                <option value="1">1 (séquentiel)</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <input type="text" id="batchOutDir" readonly />
+            <button class="btn ghost" id="pickBatchDir">Dossier...</button>
+            <button class="btn primary" id="startBatch">Lancer la queue</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONVERT ============ -->
+    <section class="panel" id="tab-convert">
+      <div class="page-header">
+        <h1>Convertisseur universel</h1>
+        <p>Vidéo, audio, image — tout format vers tout format en un clic.</p>
+      </div>
+      <div class="card">
+        <label class="lbl">Fichier source</label>
+        <div class="row">
+          <input type="text" id="convInput" readonly placeholder="Aucun fichier sélectionné" />
+          <button class="btn ghost" id="pickConvFile">Choisir...</button>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label class="lbl">Convertir vers</label>
+            <select id="convTarget">
+              <optgroup label="Vidéo">
+                <option value="mp4">MP4</option>
+                <option value="mkv">MKV</option>
+                <option value="webm">WebM</option>
+                <option value="mov">MOV</option>
+                <option value="avi">AVI</option>
+                <option value="flv">FLV</option>
+                <option value="wmv">WMV</option>
+                <option value="m4v">M4V</option>
+                <option value="3gp">3GP</option>
+                <option value="ogv">OGV</option>
+              </optgroup>
+              <optgroup label="Audio">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+                <option value="m4a">M4A</option>
+                <option value="ogg">OGG</option>
+                <option value="opus">Opus</option>
+                <option value="aac">AAC</option>
+                <option value="wma">WMA</option>
+              </optgroup>
+              <optgroup label="Image">
+                <option value="png">PNG</option>
+                <option value="jpg">JPG (depuis HEIC iPhone)</option>
+                <option value="webp">WebP</option>
+                <option value="gif">GIF</option>
+                <option value="bmp">BMP</option>
+                <option value="tiff">TIFF</option>
+                <option value="heic">HEIC</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="checkrow">
+            <label><input type="checkbox" id="convAudioOnly" /> Extraire l'audio uniquement</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <input type="text" id="convOutDir" readonly />
+          <button class="btn ghost" id="pickConvDir">Dossier...</button>
+          <button class="btn primary" id="startConv">Convertir</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMPRESS ============ -->
+    <section class="panel" id="tab-compress">
+      <div class="page-header">
+        <h1>Compression vidéo</h1>
+        <p>Réduis la taille de tes vidéos jusqu'à 80% sans perte visible.</p>
+      </div>
+      <div class="card">
+        <label class="lbl">Fichier source</label>
+        <div class="row">
+          <input type="text" id="compInput" readonly placeholder="Aucun fichier sélectionné" />
+          <button class="btn ghost" id="pickCompFile">Choisir...</button>
+        </div>
+
+        <label class="lbl">Préréglage</label>
+        <div class="presets">
+          <label class="preset"><input type="radio" name="preset" value="light" /><span>Léger</span><small>Qualité quasi identique · ~30%</small></label>
+          <label class="preset"><input type="radio" name="preset" value="medium" checked /><span>Moyen</span><small>Bon équilibre · ~60%</small></label>
+          <label class="preset"><input type="radio" name="preset" value="strong" /><span>Fort</span><small>Compression max · ~80%</small></label>
+          <label class="preset"><input type="radio" name="preset" value="custom" /><span>Avancé</span><small>Réglages manuels</small></label>
+        </div>
+
+        <div class="grid" id="customWrap" hidden>
+          <div>
+            <label class="lbl">CRF (18 = qualité max → 32 = forte compression)</label>
+            <input type="number" id="crf" value="23" min="0" max="51" />
+          </div>
+          <div>
+            <label class="lbl">Bitrate vidéo (ex: 2M, 800k)</label>
+            <input type="text" id="vBitrate" placeholder="auto" />
+          </div>
+          <div>
+            <label class="lbl">Bitrate audio</label>
+            <select id="aBitrate">
+              <option value="320k">320 kbps</option>
+              <option value="192k">192 kbps</option>
+              <option value="128k" selected>128 kbps</option>
+              <option value="96k">96 kbps</option>
+              <option value="64k">64 kbps</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Résolution</label>
+            <select id="resolution">
+              <option value="keep">Conserver</option>
+              <option value="2160">4K</option>
+              <option value="1440">1440p</option>
+              <option value="1080">1080p</option>
+              <option value="720">720p</option>
+              <option value="480">480p</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">FPS</label>
+            <select id="fps">
+              <option value="keep">Conserver</option>
+              <option value="60">60</option>
+              <option value="30">30</option>
+              <option value="24">24</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <input type="text" id="compOutDir" readonly />
+          <button class="btn ghost" id="pickCompDir">Dossier...</button>
+          <button class="btn primary" id="startComp">Compresser</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ IMAGE ============ -->
+    <section class="panel" id="tab-image">
+      <div class="page-header">
+        <h1>Outils image</h1>
+        <p>Détourage IA, upscaling, palette de couleurs et OCR — tout en local.</p>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-imode="bg">Détourage</button>
+        <button class="mode-tab" data-imode="upscale">Upscaler</button>
+        <button class="mode-tab" data-imode="palette">Palette couleurs</button>
+        <button class="mode-tab" data-imode="ocr">OCR</button>
+        <button class="mode-tab" data-imode="compress">Compression</button>
+        <button class="mode-tab" data-imode="inpaint">Effacer un objet</button>
+      </div>
+
+      <!-- BG REMOVE -->
+      <div class="card" id="imode-bg">
+
+        <div class="dropzone" id="bgDropzone">
+          <input type="file" id="bgFileInput" accept="image/*" hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <span>Glisse une image · <a href="#" id="bgPickFile">parcourir</a> · ou colle (<kbd>Ctrl</kbd>+<kbd>V</kbd>)</span>
+            <small class="muted">JPG, PNG, WebP — jusqu'à 4K · capture d'écran supportée</small>
+          </div>
+        </div>
+
+        <div class="bg-preview" id="bgPreview" hidden>
+          <div class="bg-col">
+            <span class="lbl">Original</span>
+            <div class="bg-img-wrap"><img id="bgOriginal" alt=""/></div>
+          </div>
+          <div class="bg-col">
+            <span class="lbl">Sans fond</span>
+            <div class="bg-img-wrap checker"><img id="bgResult" alt=""/></div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label class="lbl">Qualité du modèle</label>
+            <select id="bgQuality">
+              <option value="medium" selected>Élevée (modèle medium, ~10s)</option>
+              <option value="fast">Rapide (modèle small, ~3s)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <input type="text" id="bgOutDir" readonly />
+          <button class="btn ghost" id="pickBgDir">Dossier...</button>
+          <button class="btn primary" id="bgRemove">Effacer le fond</button>
+          <button class="btn" id="bgSave" hidden>Enregistrer le PNG</button>
+        </div>
+      </div>
+
+      <!-- UPSCALE -->
+      <div class="card" id="imode-upscale" hidden>
+        <h2 class="card-title">Améliorer la résolution (Upscaler IA)</h2>
+        <p class="muted">Real-ESRGAN — agrandit jusqu'à 4× sans pixellisation. Idéal pour vieilles photos, miniatures, screenshots.</p>
+
+        <div class="dropzone" id="upDropzone">
+          <input type="file" id="upFileInput" accept="image/*" hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21v-5h5M21 3v5h-5M21 3l-7 7M3 21l7-7"/></svg>
+            <span>Glisse une image · <a href="#" id="upPickFile">parcourir</a></span>
+            <small class="muted">JPG, PNG, WebP — résultat en PNG haute qualité</small>
+          </div>
+        </div>
+
+        <div id="upInfo" class="muted" hidden></div>
+
+        <div class="grid">
+          <div>
+            <label class="lbl">Facteur</label>
+            <select id="upScale">
+              <option value="2">×2 (rapide)</option>
+              <option value="3">×3</option>
+              <option value="4" selected>×4 (max)</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Modèle</label>
+            <select id="upModel">
+              <option value="realesrgan-x4plus" selected>Real-ESRGAN x4plus (photos)</option>
+              <option value="realesrgan-x4plus-anime">Anime / dessin</option>
+              <option value="realesr-animevideov3">Vidéo anime</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <input type="text" id="upOutDir" readonly />
+          <button class="btn ghost" id="pickUpDir">Dossier...</button>
+          <button class="btn primary" id="upStart">Upscaler</button>
+        </div>
+      </div>
+
+      <!-- PALETTE -->
+      <div class="card" id="imode-palette" hidden>
+        <h2 class="card-title">Extraire la palette de couleurs</h2>
+        <p class="muted">Récupère les 5 couleurs dominantes d'une image avec leurs codes HEX, RGB et CMJN. Parfait pour designer une miniature ou un site.</p>
+
+        <div class="dropzone" id="palDropzone">
+          <input type="file" id="palFileInput" accept="image/*" hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="13" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="10" cy="19" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.7 0 3-1.3 3-3 0-.8-.3-1.5-.8-2.1-.5-.6-.7-1.3-.7-2 0-1.7 1.3-3 3-3h1.6c2.7 0 4.9-2.2 4.9-4.9C23 4.5 18 2 12 2z"/></svg>
+            <span>Glisse une image · <a href="#" id="palPickFile">parcourir</a> · <kbd>Ctrl</kbd>+<kbd>V</kbd></span>
+            <small class="muted">Analyse en moins d'une seconde</small>
+          </div>
+        </div>
+
+        <div class="palette-result" id="paletteResult" hidden>
+          <div class="palette-image">
+            <img id="palOriginal" alt="" />
+          </div>
+          <div class="palette-swatches" id="palSwatches"></div>
+        </div>
+      </div>
+
+      <!-- COMPRESS (image batch) -->
+      <div class="card" id="imode-compress" hidden>
+        <h2 class="card-title">Compression d'images (TinyPNG-like)</h2>
+        <p class="muted">Compression intelligente sans perte visible. JPG, PNG, WebP. Mode batch — drop autant d'images que tu veux.</p>
+
+        <div class="dropzone" id="cmpDropzone">
+          <input type="file" id="cmpFileInput" accept="image/*" multiple hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <span>Glisse des images (lot ok) · <a href="#" id="cmpPickFile">parcourir</a></span>
+            <small class="muted">JPG, PNG, WebP, HEIC — typ. 60-80% plus léger</small>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label class="lbl">Format de sortie</label>
+            <select id="cmpFormat">
+              <option value="auto" selected>Auto (garde le format)</option>
+              <option value="jpg">JPG (taille min)</option>
+              <option value="webp">WebP (compromis idéal)</option>
+              <option value="png">PNG (sans perte)</option>
+              <option value="avif">AVIF (compression max)</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Qualité (1-100)</label>
+            <input type="number" id="cmpQuality" value="80" min="1" max="100" />
+          </div>
+          <div>
+            <label class="lbl">Largeur max (px, 0 = inchangé)</label>
+            <input type="number" id="cmpMaxWidth" value="0" min="0" max="8000" />
+          </div>
+        </div>
+
+        <div class="row">
+          <input type="text" id="cmpOutDir" readonly />
+          <button class="btn ghost" id="pickCmpDir">Dossier...</button>
+        </div>
+
+        <div id="cmpFileList"></div>
+      </div>
+
+      <!-- INPAINT (object remover) -->
+      <div class="card" id="imode-inpaint" hidden>
+        <h2 class="card-title">Effacer un objet (inpainting)</h2>
+        <p class="muted">Brosse les zones à effacer (texte, logos, personnes en arrière-plan). Algorithme Telea — idéal pour petits objets et imperfections.</p>
+
+        <div class="dropzone" id="ipDropzone" style="padding: 18px;">
+          <input type="file" id="ipFileInput" accept="image/*" hidden />
+          <div class="dropzone-inner">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Choisis une image</span>
+          </div>
+        </div>
+
+        <div class="ip-editor" id="ipEditor" hidden>
+          <div class="ip-canvas-wrap">
+            <canvas id="ipCanvas"></canvas>
+            <canvas id="ipMaskCanvas"></canvas>
+          </div>
+          <div class="ip-controls">
+            <label class="lbl">Taille du pinceau</label>
+            <input type="range" id="ipBrushSize" min="5" max="120" value="30" />
+            <span id="ipBrushSizeLbl" class="muted">30 px</span>
+          </div>
+          <div class="row">
+            <button class="btn ghost" id="ipClear">Effacer le masque</button>
+            <button class="btn ghost" id="ipUndo">Annuler dernier trait</button>
+            <button class="btn primary" id="ipRun">Effacer les zones brossées</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OCR -->
+      <div class="card" id="imode-ocr" hidden>
+        <h2 class="card-title">Extraire le texte d'une image (OCR)</h2>
+        <p class="muted">Reconnaissance Tesseract — français + anglais. Glisse une capture d'écran, un scan, une affiche.</p>
+
+        <div class="dropzone" id="ocrDropzone">
+          <input type="file" id="ocrFileInput" accept="image/*" hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            <span>Glisse une image · <a href="#" id="ocrPickFile">parcourir</a> · <kbd>Ctrl</kbd>+<kbd>V</kbd></span>
+            <small class="muted">JPG, PNG, WebP, capture d'écran</small>
+          </div>
+        </div>
+
+        <div id="ocrProgress" class="muted" hidden></div>
+
+        <div class="ocr-result" id="ocrResult" hidden>
+          <div class="row">
+            <textarea id="ocrText" rows="10" readonly></textarea>
+          </div>
+          <div class="row">
+            <button class="btn" id="ocrCopy">Copier le texte</button>
+            <button class="btn ghost" id="ocrSave">Enregistrer en .txt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AUDIO ============ -->
+    <section class="panel" id="tab-audio">
+      <div class="page-header">
+        <h1>Édition audio automatique</h1>
+        <p>Coupe les silences, normalise le volume, ajoute des fondus — sans éditeur audio.</p>
+      </div>
+      <div class="card">
+
+        <label class="lbl">Mode</label>
+        <div class="presets">
+          <label class="preset"><input type="radio" name="audioMode" value="trim" checked /><span>Auto-trim</span><small>Coupe les silences automatiquement</small></label>
+          <label class="preset"><input type="radio" name="audioMode" value="normalize" /><span>Normaliser</span><small>Volume aux normes pro</small></label>
+          <label class="preset"><input type="radio" name="audioMode" value="crossfade" /><span>Fondu enchaîné</span><small>Mélanger 2 fichiers</small></label>
+          <label class="preset"><input type="radio" name="audioMode" value="subtitles" /><span>Sous-titres</span><small>Whisper IA → SRT/VTT</small></label>
+          <label class="preset"><input type="radio" name="audioMode" value="audiogram" /><span>Audiogramme</span><small>Vidéo waveform pour Insta/TikTok</small></label>
+          <label class="preset"><input type="radio" name="audioMode" value="summary" /><span>Résumé YouTube</span><small>IA Whisper + Ollama</small></label>
+        </div>
+
+        <!-- Trim mode -->
+        <div id="audioTrimWrap">
+          <label class="lbl">Fichier audio/vidéo</label>
+          <div class="row">
+            <input type="text" id="audioInput1" readonly placeholder="Aucun fichier sélectionné" />
+            <button class="btn ghost" id="pickAudio1">Choisir...</button>
+          </div>
+          <div class="grid">
+            <div>
+              <label class="lbl">Seuil de silence (dB)</label>
+              <select id="silenceDb">
+                <option value="-50">-50 dB (très sensible)</option>
+                <option value="-40" selected>-40 dB (recommandé)</option>
+                <option value="-30">-30 dB (peu sensible)</option>
+                <option value="-20">-20 dB (que les gros silences)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Durée min du silence (s)</label>
+              <input type="number" id="silenceMin" value="0.5" min="0.1" max="10" step="0.1" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Normalize mode -->
+        <div id="audioNormWrap" hidden>
+          <label class="lbl">Fichier audio/vidéo</label>
+          <div class="row">
+            <input type="text" id="audioInput2" readonly placeholder="Aucun fichier sélectionné" />
+            <button class="btn ghost" id="pickAudio2">Choisir...</button>
+          </div>
+          <label class="lbl">Cible LUFS</label>
+          <select id="lufsTarget">
+            <option value="-14">YouTube / Spotify (-14 LUFS)</option>
+            <option value="-16" selected>Podcast / Apple (-16 LUFS)</option>
+            <option value="-19">Streaming radio (-19 LUFS)</option>
+            <option value="-23">Broadcast EBU R128 (-23 LUFS)</option>
+          </select>
+        </div>
+
+        <!-- Subtitles mode -->
+        <div id="audioSubsWrap" hidden>
+          <label class="lbl">Vidéo ou audio</label>
+          <div class="row">
+            <input type="text" id="subsInput" readonly placeholder="Aucun fichier sélectionné" />
+            <button class="btn ghost" id="pickSubs">Choisir...</button>
+          </div>
+          <div class="grid">
+            <div>
+              <label class="lbl">Langue</label>
+              <select id="subsLang">
+                <option value="auto" selected>Détection auto</option>
+                <option value="fr">Français</option>
+                <option value="en">Anglais</option>
+                <option value="es">Espagnol</option>
+                <option value="de">Allemand</option>
+                <option value="it">Italien</option>
+                <option value="pt">Portugais</option>
+                <option value="ja">Japonais</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Modèle</label>
+              <select id="subsModel">
+                <option value="tiny" selected>Tiny (rapide, 75 MB)</option>
+                <option value="base">Base (équilibré, 142 MB)</option>
+                <option value="small">Small (qualité, 466 MB)</option>
+                <option value="medium">Medium (top, 1.5 GB)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Format</label>
+              <select id="subsFormat">
+                <option value="srt" selected>SRT (YouTube, classique)</option>
+                <option value="vtt">VTT (web)</option>
+                <option value="txt">TXT (simple)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audiogramme mode -->
+        <div id="audioAudiogramWrap" hidden>
+          <label class="lbl">Fichier audio</label>
+          <div class="row">
+            <input type="text" id="audiogramAudio" readonly />
+            <button class="btn ghost" id="pickAudiogramAudio">Choisir...</button>
+          </div>
+          <label class="lbl">Image de couverture (optionnel)</label>
+          <div class="row">
+            <input type="text" id="audiogramCover" readonly />
+            <button class="btn ghost" id="pickAudiogramCover">Choisir...</button>
+          </div>
+          <div class="grid">
+            <div>
+              <label class="lbl">Format</label>
+              <select id="audiogramSize">
+                <option value="square" selected>Carré 1080×1080 (Insta)</option>
+                <option value="vertical">Vertical 1080×1920 (TikTok/Reels)</option>
+                <option value="horizontal">Horizontal 1920×1080 (YouTube)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Couleur waveform</label>
+              <input type="text" id="audiogramColor" value="#FF7A1A" />
+            </div>
+            <div class="checkrow">
+              <label><input type="checkbox" id="audiogramSubs" checked /> Sous-titres incrustés (Whisper)</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary mode -->
+        <div id="audioSummaryWrap" hidden>
+          <label class="lbl">URL YouTube</label>
+          <div class="row">
+            <input type="text" id="summaryUrl" placeholder="https://www.youtube.com/watch?v=..." />
+          </div>
+          <div id="ollamaStatus" class="muted" style="padding: 8px 12px; background: var(--bg-elevated); border-radius: var(--r-sm); margin-bottom: 12px;">Vérification d'Ollama…</div>
+          <div class="grid">
+            <div>
+              <label class="lbl">Modèle Ollama</label>
+              <select id="summaryModel">
+                <option value="llama3.2">llama3.2 (rapide)</option>
+                <option value="llama3.1">llama3.1</option>
+                <option value="mistral">mistral</option>
+                <option value="qwen2.5">qwen2.5</option>
+                <option value="phi3">phi3</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Style de résumé</label>
+              <select id="summaryStyle">
+                <option value="bullets" selected>Bullet points</option>
+                <option value="short">Court (3-5 phrases)</option>
+                <option value="detailed">Détaillé en sections</option>
+                <option value="chapters">Chapitres YouTube (timestamps)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Langue</label>
+              <select id="summaryLang">
+                <option value="fr" selected>Français</option>
+                <option value="en">Anglais</option>
+                <option value="auto">Langue d'origine</option>
+              </select>
+            </div>
+          </div>
+          <textarea id="summaryOutput" rows="10" readonly placeholder="Le résumé apparaîtra ici…" style="margin-top: 12px;"></textarea>
+          <div class="row">
+            <button class="btn" id="copySummary">Copier le résumé</button>
+            <button class="btn ghost" id="saveSummary">Enregistrer en .txt</button>
+          </div>
+        </div>
+
+        <!-- Crossfade mode -->
+        <div id="audioFadeWrap" hidden>
+          <label class="lbl">Premier fichier</label>
+          <div class="row">
+            <input type="text" id="audioFadeA" readonly />
+            <button class="btn ghost" id="pickFadeA">Choisir...</button>
+          </div>
+          <label class="lbl">Second fichier</label>
+          <div class="row">
+            <input type="text" id="audioFadeB" readonly />
+            <button class="btn ghost" id="pickFadeB">Choisir...</button>
+          </div>
+          <label class="lbl">Durée du fondu (s)</label>
+          <input type="number" id="fadeDuration" value="3" min="0.5" max="15" step="0.5" />
+        </div>
+
+        <div class="row">
+          <input type="text" id="audioOutDir" readonly />
+          <button class="btn ghost" id="pickAudioDir">Dossier...</button>
+          <button class="btn primary" id="startAudio">Lancer le traitement</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PDF ============ -->
+    <section class="panel" id="tab-pdf">
+      <div class="page-header">
+        <h1>Outils PDF</h1>
+        <p>Conversion, fusion, division et réorganisation — 100 % local.</p>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-pdfmode="topng">PDF → Images</button>
+        <button class="mode-tab" data-pdfmode="frompng">Images → PDF</button>
+        <button class="mode-tab" data-pdfmode="merge">Fusionner</button>
+        <button class="mode-tab" data-pdfmode="split">Diviser</button>
+        <button class="mode-tab" data-pdfmode="reorder">Réorganiser</button>
+      </div>
+
+      <!-- PDF → Images -->
+      <div class="card" id="pdfmode-topng">
+        <h2 class="card-title">Extraire les pages en images</h2>
+        <p class="muted">Chaque page → 1 fichier image dans un sous-dossier.</p>
+        <div class="row">
+          <input type="text" id="pdfTopngInput" readonly placeholder="Aucun PDF sélectionné" />
+          <button class="btn ghost" id="pickPdfTopng">Choisir...</button>
+        </div>
+        <div class="grid">
+          <div>
+            <label class="lbl">Format</label>
+            <select id="pdfTopngFmt">
+              <option value="jpg" selected>JPG (recommandé)</option>
+              <option value="png">PNG (lossless)</option>
+              <option value="webp">WebP</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Résolution (DPI)</label>
+            <select id="pdfTopngDpi">
+              <option value="100">100 DPI (rapide)</option>
+              <option value="200" selected>200 DPI (équilibre)</option>
+              <option value="300">300 DPI (qualité impression)</option>
+              <option value="600">600 DPI (max)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <input type="text" id="pdfTopngOutDir" readonly />
+          <button class="btn ghost" id="pickPdfTopngDir">Dossier...</button>
+          <button class="btn primary" id="runPdfTopng">Extraire</button>
+        </div>
+      </div>
+
+      <!-- Images → PDF -->
+      <div class="card" id="pdfmode-frompng" hidden>
+        <h2 class="card-title">Combiner des images en PDF</h2>
+        <p class="muted">Chaque image devient une page. JPG, PNG, WebP supportés.</p>
+        <div class="dropzone" id="pdfFrompngDrop">
+          <input type="file" id="pdfFrompngFiles" accept="image/*" multiple hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Glisse plusieurs images · <a href="#" id="pdfFrompngBrowse">parcourir</a></span>
+            <small class="muted">L'ordre du drop est préservé</small>
+          </div>
+        </div>
+        <div id="pdfFrompngList"></div>
+        <div class="row">
+          <button class="btn primary" id="runPdfFrompng">Créer le PDF</button>
+        </div>
+      </div>
+
+      <!-- Merge -->
+      <div class="card" id="pdfmode-merge" hidden>
+        <h2 class="card-title">Fusionner plusieurs PDF</h2>
+        <p class="muted">Dépose les PDF dans l'ordre voulu.</p>
+        <div class="dropzone" id="pdfMergeDrop">
+          <input type="file" id="pdfMergeFiles" accept="application/pdf" multiple hidden />
+          <div class="dropzone-inner">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Glisse les PDF · <a href="#" id="pdfMergeBrowse">parcourir</a></span>
+          </div>
+        </div>
+        <div id="pdfMergeList"></div>
+        <div class="row">
+          <button class="btn primary" id="runPdfMerge">Fusionner</button>
+        </div>
+      </div>
+
+      <!-- Split -->
+      <div class="card" id="pdfmode-split" hidden>
+        <h2 class="card-title">Diviser un PDF</h2>
+        <p class="muted">Définis des plages : ex. <code>1-3, 4-7, 8-10</code> → 3 PDF séparés.</p>
+        <div class="row">
+          <input type="text" id="pdfSplitInput" readonly placeholder="Aucun PDF sélectionné" />
+          <button class="btn ghost" id="pickPdfSplit">Choisir...</button>
+        </div>
+        <label class="lbl">Plages (séparées par virgules)</label>
+        <input type="text" id="pdfSplitRanges" placeholder="Ex: 1-3, 4-7, 8-10" />
+        <div class="row">
+          <input type="text" id="pdfSplitOutDir" readonly />
+          <button class="btn ghost" id="pickPdfSplitDir">Dossier...</button>
+          <button class="btn primary" id="runPdfSplit">Diviser</button>
+        </div>
+      </div>
+
+      <!-- Reorder -->
+      <div class="card" id="pdfmode-reorder" hidden>
+        <h2 class="card-title">Réorganiser / supprimer des pages</h2>
+        <p class="muted">Glisse-dépose les vignettes pour changer l'ordre. Clique sur la corbeille pour supprimer une page.</p>
+        <div class="row">
+          <input type="text" id="pdfReorderInput" readonly placeholder="Aucun PDF sélectionné" />
+          <button class="btn ghost" id="pickPdfReorder">Choisir...</button>
+        </div>
+
+        <div id="pdfReorderLoading" class="muted" hidden>Chargement des miniatures…</div>
+
+        <div id="pdfReorderGrid" class="pdf-grid"></div>
+
+        <div class="row" id="pdfReorderActions" hidden>
+          <span class="muted" id="pdfReorderStatus"></span>
+          <div style="flex:1"></div>
+          <button class="btn ghost" id="pdfReorderReset">Réinitialiser</button>
+          <button class="btn primary" id="runPdfReorder">Enregistrer le PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PIPETTE ============ -->
+    <section class="panel" id="tab-picker">
+      <div class="page-header">
+        <h1>Pipette globale</h1>
+        <p>Capture une couleur n'importe où à l'écran — page web, vidéo, autre app.</p>
+      </div>
+      <div class="card">
+        <div class="picker-hero">
+          <div class="picker-preview" id="pickerPreview" style="background: var(--bg-elevated);"></div>
+          <div class="picker-codes">
+            <div class="code-row"><span class="code-label">HEX</span><span class="code-val" id="codeHex">—</span><button class="btn small copy-btn" data-copy="codeHex">Copier</button></div>
+            <div class="code-row"><span class="code-label">RGB</span><span class="code-val" id="codeRgb">—</span><button class="btn small copy-btn" data-copy="codeRgb">Copier</button></div>
+            <div class="code-row"><span class="code-label">HSL</span><span class="code-val" id="codeHsl">—</span><button class="btn small copy-btn" data-copy="codeHsl">Copier</button></div>
+            <div class="code-row"><span class="code-label">CMJN</span><span class="code-val" id="codeCmyk">—</span><button class="btn small copy-btn" data-copy="codeCmyk">Copier</button></div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="startPicker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg>
+            Lancer la pipette
+          </button>
+          <span class="muted">L'app se cache, clique n'importe où à l'écran pour capturer la couleur. Échap pour annuler.</span>
+        </div>
+        <div class="picker-history" id="pickerHistory"></div>
+      </div>
+    </section>
+
+    <!-- ============ JOBS ============ -->
+    <section class="jobs">
+      <div class="jobs-header">
+        <h2>Tâches en cours</h2>
+        <span class="jobs-count" id="jobsCount"></span>
+        <div style="flex:1"></div>
+        <button class="btn ghost small" id="clearDoneBtn" hidden>Effacer les terminées</button>
+        <button class="btn ghost small" id="clearAllBtn" hidden>Tout effacer</button>
+      </div>
+      <div id="jobList" class="job-list"></div>
+      <div id="jobsEmpty" class="jobs-empty">Aucune tâche pour l'instant.</div>
+    </section>
+  </main>
+
+  </main>
+  </div><!-- /app-shell -->
+
+  <!-- ============ ERROR / TOAST OVERLAY ============ -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div id="errorModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-icon" id="errorModalIcon"></div>
+      <h2 id="errorModalTitle"></h2>
+      <p id="errorModalDetail"></p>
+      <pre id="errorModalRaw" hidden></pre>
+      <div class="modal-actions" id="errorModalActions"></div>
+    </div>
+  </div>
+
+  <!-- ============ ONBOARDING ============ -->
+  <div id="onboarding" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-card onboarding-card">
+      <div class="onboarding-progress" id="onbProgress"></div>
+      <div class="onboarding-slides" id="onbSlides"></div>
+      <div class="onboarding-actions">
+        <button class="btn ghost" id="onbSkip">Passer</button>
+        <div style="flex:1"></div>
+        <button class="btn ghost" id="onbPrev" hidden>Précédent</button>
+        <button class="btn primary" id="onbNext">Suivant</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

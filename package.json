@@ -1,0 +1,67 @@
+{
+  "name": "ultimate-creator-app",
+  "productName": "Ultimate Creator App",
+  "version": "1.0.0",
+  "description": "L'app ultime pour les créateurs : téléchargement YouTube, conversion et compression de tous formats.",
+  "main": "main.js",
+  "author": "Julian Espin",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-builder --win --x64",
+    "package-mac": "electron-builder --mac",
+    "package-linux": "electron-builder --linux"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "@imgly/background-removal-node": "^1.4.5",
+    "tesseract.js": "^5.1.1",
+    "nodejs-whisper": "^0.2.9",
+    "sharp": "^0.33.4",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.4.168",
+    "@napi-rs/canvas": "^0.1.55"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.julianespin.ultimatecreator",
+    "productName": "Ultimate Creator App",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    }
+  }
+}

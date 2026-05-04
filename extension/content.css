@@ -1,0 +1,45 @@
+#uc-download-btn.uc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 36px;
+  margin-right: 8px;
+  background: linear-gradient(135deg, #ff7a1a, #ff9a4a);
+  color: #1a0d00 !important;
+  border: none;
+  border-radius: 18px;
+  font-family: "YouTube Sans", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(255, 122, 26, 0.3);
+}
+#uc-download-btn.uc-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+#uc-download-btn.uc-btn:active { transform: translateY(0); }
+#uc-download-btn.uc-btn.loading { opacity: 0.6; pointer-events: none; }
+#uc-download-btn.uc-btn svg { flex-shrink: 0; }
+
+#uc-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #17171b;
+  color: #f1f1f3;
+  border: 1px solid #ff7a1a;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  z-index: 999999;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+#uc-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

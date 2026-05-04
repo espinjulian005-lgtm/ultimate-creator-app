@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #ff7a1a;
+      --brand-2: #ff9a4a;
+      --bg: #0a0a0e;
+      --bg-deep: #06060a;
+      --glass-1: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.08);
+      --glass-3: rgba(255,255,255,0.12);
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.18);
+      --text: #f4f4f7;
+      --text-muted: #a8a8b8;
+      --text-faint: #75757f;
+      --success: #4ade80;
+      --error: #f87171;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 340px;
+      min-height: 480px;
+      font-family: 'Inter', -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg-deep);
+      overflow: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Animated aurora backdrop */
+    .aurora {
+      position: absolute; inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.6;
+      mix-blend-mode: screen;
+    }
+    .blob.b1 { width: 280px; height: 280px; background: var(--brand); top: -80px; right: -80px; animation: f1 20s ease-in-out infinite; }
+    .blob.b2 { width: 220px; height: 220px; background: #a78bfa; bottom: -60px; left: -60px; animation: f2 24s ease-in-out infinite; }
+    .blob.b3 { width: 160px; height: 160px; background: #60a5fa; top: 40%; right: 30%; animation: f3 18s ease-in-out infinite; }
+    @keyframes f1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-30px,40px) scale(1.1)} }
+    @keyframes f2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,-20px) scale(1.15)} }
+    @keyframes f3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-30px,-30px) scale(0.9)} }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      padding: 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--glass-2);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display: grid; place-items: center;
+      color: #1a0d00;
+      box-shadow: 0 4px 12px rgba(255,122,26,0.4);
+    }
+    .logo-mark svg { width: 18px; height: 18px; }
+    h1 {
+      font-size: 14px;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      background: linear-gradient(180deg, #ffffff, #b8b8c8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle { font-size: 11px; color: var(--text-muted); }
+
+    /* Status pill */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      background: var(--glass-2);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-faint);
+      animation: pulse 2s infinite;
+    }
+    .status.ok .status-dot { background: var(--success); }
+    .status.bad .status-dot { background: var(--error); }
+    .status.ok { color: var(--success); }
+    .status.bad { color: var(--error); }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 currentColor; }
+      70% { box-shadow: 0 0 0 6px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+
+    /* Download button */
+    .dl-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #1a0d00;
+      border: none;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 20px rgba(255,122,26,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .dl-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(255,122,26,0.5); }
+    .dl-btn:active { transform: translateY(0); }
+    .dl-btn svg { width: 16px; height: 16px; }
+
+    /* Section */
+    .section {
+      background: var(--glass-2);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 4px 0;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      font-weight: 700;
+      padding: 12px 14px 6px;
+    }
+
+    /* Toggle row */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 10px;
+      margin: 0 4px;
+    }
+    .toggle-row:hover { background: var(--glass-1); }
+    .toggle-row label {
+      font-size: 12px;
+      flex: 1;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .toggle-row small { color: var(--text-muted); font-size: 11px; display: block; margin-top: 2px; font-weight: 400; }
+
+    .switch {
+      position: relative;
+      width: 32px; height: 18px;
+      background: var(--glass-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .switch::after {
+      content: '';
+      position: absolute;
+      top: 1px; left: 1px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .switch.on {
+      background: rgba(255,122,26,0.25);
+      border-color: var(--brand);
+      box-shadow: 0 0 12px rgba(255,122,26,0.4);
+    }
+    .switch.on::after { left: 14px; background: var(--brand); }
+
+    /* Stats footer */
+    .stats {
+      margin-top: 4px;
+      padding: 10px 14px;
+      background: var(--glass-1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .stats b {
+      color: var(--brand);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 13px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v12"/><path d="m6 9 6 6 6-6"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Ultimate Creator</h1>
+        <div class="subtitle">Downloader + Adblock</div>
+      </div>
+    </div>
+
+    <div id="status" class="status">
+      <span class="status-dot"></span>
+      <span id="statusText">Vérification...</span>
+    </div>
+
+    <button class="dl-btn" id="dl">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Télécharger cette vidéo
+    </button>
+
+    <div class="section">
+      <div class="section-title">Bloqueur de pubs</div>
+
+      <div class="toggle-row" data-target="t-yt">
+        <label for="t-yt">
+          Pubs YouTube
+          <small>Bloque les pubs avant/pendant les vidéos</small>
+        </label>
+        <div class="switch" id="t-yt" data-key="youtube_ads"></div>
+      </div>
+
+      <div class="toggle-row" data-target="t-skip">
+        <label for="t-skip">
+          Skip auto des pubs vidéo
+          <small>Clique automatiquement sur "Passer l'annonce"</small>
+        </label>
+        <div class="switch" id="t-skip" data-key="skip_video_ads"></div>
+      </div>
+
+      <div class="toggle-row" data-target="t-gen">
+        <label for="t-gen">
+          Pubs générales (web)
+          <small>DoubleClick, Taboola, Outbrain, Criteo…</small>
+        </label>
+        <div class="switch" id="t-gen" data-key="general_ads"></div>
+      </div>
+
+      <div class="toggle-row" data-target="t-pop">
+        <label for="t-pop">
+          Popups & popunders
+          <small>Bloque les fenêtres non sollicitées</small>
+        </label>
+        <div class="switch" id="t-pop" data-key="block_popups"></div>
+      </div>
+
+      <div class="toggle-row" data-target="t-trk">
+        <label for="t-trk">
+          Trackers (mode strict)
+          <small>GA, Hotjar, Mixpanel, Segment…</small>
+        </label>
+        <div class="switch" id="t-trk" data-key="trackers"></div>
+      </div>
+    </div>
+
+    <div class="stats" id="stats">Chargement…</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

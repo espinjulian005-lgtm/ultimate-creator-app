@@ -1,0 +1,172 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  # ============ macOS build (.dmg) ============
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prepare bin directory
+        run: |
+          mkdir -p bin
+          # yt-dlp for macOS
+          curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o bin/yt-dlp
+          chmod +x bin/yt-dlp
+          # ffmpeg via Homebrew
+          brew install ffmpeg
+          cp "$(which ffmpeg)" bin/ffmpeg
+          cp "$(which ffprobe)" bin/ffprobe || true
+          # Real-ESRGAN for macOS (optional)
+          curl -L https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-macos.zip -o /tmp/realesrgan.zip || true
+          if [ -f /tmp/realesrgan.zip ]; then
+            mkdir -p /tmp/realesrgan
+            unzip -q /tmp/realesrgan.zip -d /tmp/realesrgan
+            cp -R /tmp/realesrgan/* bin/ || true
+            chmod +x bin/realesrgan-ncnn-vulkan || true
+          fi
+
+      - name: Build macOS DMG
+        run: npm run package-mac
+        env:
+          # Skip code signing for now (requires Apple Developer cert)
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: |
+            dist/*.dmg
+            dist/*.zip
+
+  # ============ Windows build (.exe installer) ============
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download binaries
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path bin
+          Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile bin\yt-dlp.exe
+          # ffmpeg essentials
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile $env:TEMP\ffmpeg.zip
+          Expand-Archive -Path $env:TEMP\ffmpeg.zip -DestinationPath $env:TEMP\ffmpeg
+          $exe = Get-ChildItem -Path $env:TEMP\ffmpeg -Filter ffmpeg.exe -Recurse | Select-Object -First 1
+          Copy-Item $exe.FullName -Destination bin\ffmpeg.exe
+          $probe = Get-ChildItem -Path $env:TEMP\ffmpeg -Filter ffprobe.exe -Recurse | Select-Object -First 1
+          if ($probe) { Copy-Item $probe.FullName -Destination bin\ffprobe.exe }
+          # Real-ESRGAN
+          Invoke-WebRequest -Uri "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-windows.zip" -OutFile $env:TEMP\realesrgan.zip
+          Expand-Archive -Path $env:TEMP\realesrgan.zip -DestinationPath $env:TEMP\realesrgan
+          $foundExe = Get-ChildItem -Path $env:TEMP\realesrgan -Filter realesrgan-ncnn-vulkan.exe -Recurse | Select-Object -First 1
+          if ($foundExe) {
+            Copy-Item -Path "$($foundExe.Directory.FullName)\*" -Destination bin -Recurse -Force
+          }
+
+      - name: Build Windows installer
+        run: npm run package
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: |
+            dist/*.exe
+            dist/*.msi
+
+  # ============ Linux build (.AppImage) ============
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download binaries
+        run: |
+          mkdir -p bin
+          curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o bin/yt-dlp
+          chmod +x bin/yt-dlp
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          cp $(which ffmpeg) bin/ffmpeg
+          cp $(which ffprobe) bin/ffprobe || true
+
+      - name: Build Linux AppImage
+        run: npm run package-linux
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-appimage
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+
+  # ============ Create GitHub Release on tags ============
+  release:
+    needs: [build-mac, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure
+        run: ls -R artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/macos-dmg/*
+            artifacts/windows-installer/*
+            artifacts/linux-appimage/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
