@@ -66,7 +66,7 @@
 
 ### Windows (le plus simple)
 
-1. Va sur la page **[Releases](https://github.com/TON_USER/ultimate-creator-app/releases)** du projet
+1. Va sur la page **[Releases](https://github.com/espinjulian005-lgtm/ultimate-creator-app/releases)** du projet
 2. Télécharge `Ultimate.Creator.App.Setup.x.x.x.exe`
 3. Lance l'installeur — l'app démarre automatiquement à la fin
 
@@ -74,7 +74,7 @@
 
 ### macOS
 
-1. Télécharge `Ultimate.Creator.App-x.x.x.dmg` depuis [Releases](https://github.com/TON_USER/ultimate-creator-app/releases)
+1. Télécharge `Ultimate.Creator.App-x.x.x.dmg` depuis [Releases](https://github.com/espinjulian005-lgtm/ultimate-creator-app/releases)
 2. Glisse l'icône dans le dossier Applications
 3. Premier lancement : **clic-droit** → "Ouvrir" pour contourner Gatekeeper
 
@@ -88,7 +88,7 @@ chmod +x Ultimate-Creator-App-x.x.x.AppImage
 ### Installation depuis les sources (pour développeurs)
 
 ```bash
-git clone https://github.com/TON_USER/ultimate-creator-app
+git clone https://github.com/espinjulian005-lgtm/ultimate-creator-app
 cd ultimate-creator-app
 # Windows :
 .\install.ps1
