@@ -1,7 +1,7 @@
 {
   "name": "ultimate-creator-app",
   "productName": "Ultimate Creator App",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "L'app ultime pour les créateurs : téléchargement YouTube, conversion et compression de tous formats.",
   "main": "main.js",
   "author": "Julian Espin",
