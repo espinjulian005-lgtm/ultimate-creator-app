@@ -230,8 +230,10 @@ jobs:
             echo "⚠️  Build did not produce a .app — shipping Xcode project only."
           else
             echo "App: $APP"
-            ditto -c -k --keepParent "$APP" "safari-build/UltimateCreatorExtension-unsigned.app.zip"
-            ls -la safari-build/UltimateCreatorExtension-unsigned.app.zip
+            # Zip directly at the repo root so the artifact has a flat structure
+            # (the release glob `artifacts/safari-extension/*` is non-recursive).
+            ditto -c -k --keepParent "$APP" "UltimateCreatorExtension-unsigned.app.zip"
+            ls -la UltimateCreatorExtension-unsigned.app.zip
           fi
 
       - name: Package Xcode project
@@ -249,7 +251,7 @@ jobs:
           name: safari-extension
           path: |
             UltimateCreatorExtension-Xcode-project.zip
-            safari-build/UltimateCreatorExtension-unsigned.app.zip
+            UltimateCreatorExtension-unsigned.app.zip
           if-no-files-found: warn
 
   # ============ Create GitHub Release on tags ============
