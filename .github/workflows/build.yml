@@ -194,23 +194,44 @@ jobs:
           if [ -z "$PROJECT" ]; then
             echo "❌ No .xcodeproj produced by the converter"; exit 1
           fi
-          echo "Building $PROJECT"
+          echo "Project: $PROJECT"
+
+          # Auto-detect the macOS scheme (converter scheme names vary by Xcode version)
+          xcodebuild -project "$PROJECT" -list
+          SCHEME_LIST=$(xcodebuild -project "$PROJECT" -list 2>/dev/null \
+            | sed -n '/Schemes:/,/^$/p' | tail -n +2 | sed 's/^[[:space:]]*//' | sed '/^$/d')
+          echo "Available schemes:"; echo "$SCHEME_LIST"
+          SCHEME=$(echo "$SCHEME_LIST" | grep -i 'macos' | head -n 1)
+          if [ -z "$SCHEME" ]; then
+            SCHEME=$(echo "$SCHEME_LIST" | grep -vi 'ios\|iphone\|ipad\|watch\|tv' | head -n 1)
+          fi
+          if [ -z "$SCHEME" ]; then
+            SCHEME=$(echo "$SCHEME_LIST" | head -n 1)
+          fi
+          if [ -z "$SCHEME" ]; then
+            echo "⚠️  No build scheme found — shipping Xcode project only."
+            exit 0
+          fi
+          echo "Using scheme: $SCHEME"
+
           xcodebuild \
             -project "$PROJECT" \
-            -scheme "Ultimate Creator Extension (macOS)" \
+            -scheme "$SCHEME" \
             -configuration Release \
             -derivedDataPath build-safari \
+            -destination 'generic/platform=macOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build || true
-          # Locate any .app produced; tolerate scheme name variations.
+            build || echo "xcodebuild returned non-zero"
+
           APP=$(find build-safari -name '*.app' -path '*Release*' | head -n 1)
           if [ -z "$APP" ]; then
             echo "⚠️  Build did not produce a .app — shipping Xcode project only."
           else
             echo "App: $APP"
             ditto -c -k --keepParent "$APP" "safari-build/UltimateCreatorExtension-unsigned.app.zip"
+            ls -la safari-build/UltimateCreatorExtension-unsigned.app.zip
           fi
 
       - name: Package Xcode project
