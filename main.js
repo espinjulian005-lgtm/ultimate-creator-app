@@ -570,17 +570,26 @@ ipcMain.handle('autolaunch-set', (_, enabled) => {
 ipcMain.handle('window-minimize', () => mainWindow && mainWindow.minimize());
 ipcMain.handle('window-maximize-toggle', () => {
   if (!mainWindow) return false;
+  // macOS native fullscreen is a separate state from "maximized" — when the
+  // user (or the OS) put us into fullscreen, leaving it must take priority,
+  // otherwise the window-controls button silently does nothing.
+  if (mainWindow.isFullScreen()) {
+    mainWindow.setFullScreen(false);
+    return false;
+  }
   if (mainWindow.isMaximized()) mainWindow.unmaximize();
   else mainWindow.maximize();
   return mainWindow.isMaximized();
 });
 ipcMain.handle('window-close', () => mainWindow && mainWindow.close());
-ipcMain.handle('window-is-maximized', () => mainWindow ? mainWindow.isMaximized() : false);
+ipcMain.handle('window-is-maximized', () => mainWindow ? (mainWindow.isMaximized() || mainWindow.isFullScreen()) : false);
 
-// Notify renderer when the window's max state changes (so the icon can update)
+// Notify renderer when the window's max/fullscreen state changes
 app.on('browser-window-created', (_, win) => {
   win.on('maximize', () => win.webContents.send('window-state', { maximized: true }));
   win.on('unmaximize', () => win.webContents.send('window-state', { maximized: false }));
+  win.on('enter-full-screen', () => win.webContents.send('window-state', { maximized: true }));
+  win.on('leave-full-screen', () => win.webContents.send('window-state', { maximized: false }));
 });
 
 // ============ Thumbnail download ============
@@ -1195,8 +1204,53 @@ ipcMain.handle('summarize-youtube', async (event, opts) => {
 // ============ Color Picker (screen pipette) ============
 let pickerWindow = null;
 let pickerScreenshotPath = null;
+let macPickerActive = false;
+
+// macOS: use the system NSColorSampler via our small Swift helper. The OS
+// shows a magnifying loupe that follows the cursor across all displays and
+// Spaces, returns the picked color, and needs no Screen Recording permission.
+function pickColorMac() {
+  return new Promise((resolve) => {
+    const helper = binPath('uc-color-picker');
+    if (!fs.existsSync(helper)) {
+      return resolve({ ok: false, error: 'Helper uc-color-picker manquant dans bin/.' });
+    }
+    macPickerActive = true;
+    const wasVisible = mainWindow && mainWindow.isVisible();
+    if (wasVisible) mainWindow.hide();
+
+    const child = spawn(helper, [], { stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '';
+    child.stdout.on('data', (d) => { out += d.toString(); });
+    child.on('error', (err) => {
+      macPickerActive = false;
+      if (wasVisible && mainWindow) { mainWindow.show(); mainWindow.focus(); }
+      resolve({ ok: false, error: 'Pipette macOS: ' + err.message });
+    });
+    child.on('close', (code) => {
+      macPickerActive = false;
+      if (wasVisible && mainWindow) { mainWindow.show(); mainWindow.focus(); }
+      const line = out.trim();
+      if (code !== 0 || !line) {
+        return resolve({ ok: false, canceled: true });
+      }
+      const parts = line.split(',').map((s) => parseInt(s, 10));
+      if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) {
+        return resolve({ ok: false, error: 'Sortie pipette invalide: ' + line });
+      }
+      const [r, g, b] = parts;
+      const hex = '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('').toUpperCase();
+      clipboard.writeText(hex);
+      resolve({ ok: true, hex, r, g, b });
+    });
+  });
+}
 
 ipcMain.handle('pick-color', async () => {
+  if (process.platform === 'darwin') {
+    if (macPickerActive) return { ok: false, error: 'Pipette deja active' };
+    return pickColorMac();
+  }
   if (pickerWindow) return { ok: false, error: 'Pipette deja active' };
 
   const primary = screen.getPrimaryDisplay();

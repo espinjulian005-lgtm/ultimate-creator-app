@@ -61,6 +61,12 @@ jobs:
             cp -R /tmp/realesrgan/* bin/ || true
             chmod +x bin/realesrgan-ncnn-vulkan || true
           fi
+          # Native color sampler (NSColorSampler) — universal binary
+          swiftc -O -target arm64-apple-macos11.0  -o /tmp/uc-color-picker-arm64 scripts/uc-color-picker.swift
+          swiftc -O -target x86_64-apple-macos11.0 -o /tmp/uc-color-picker-x64   scripts/uc-color-picker.swift
+          lipo -create /tmp/uc-color-picker-arm64 /tmp/uc-color-picker-x64 -output bin/uc-color-picker
+          chmod +x bin/uc-color-picker
+          file bin/uc-color-picker
 
       - name: Build macOS DMG
         run: npm run package-mac
