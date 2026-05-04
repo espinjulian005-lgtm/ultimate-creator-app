@@ -55,10 +55,11 @@
 - HEX/RGB/HSL/CMJN copiés instantanément
 - Historique des 16 dernières couleurs
 
-### 🌐 Extension navigateur (Chrome / Edge / Opera / Brave)
+### 🌐 Extension navigateur (Chrome / Edge / Brave / Opera / Firefox / Safari)
 - Bouton orange **"Télécharger"** injecté sur YouTube
 - **Adblock configurable** : pubs YouTube (skip auto), pubs web, popups, trackers
 - Communication sécurisée avec l'app via serveur local
+- **Compatible Safari** via projet Xcode généré automatiquement (voir [extension/README.md](extension/README.md))
 
 ---
 
@@ -102,14 +103,29 @@ npm start
 
 ## 🌐 Installer l'extension navigateur
 
-L'extension est dans le dossier `extension/`.
+L'extension vit dans le dossier [`extension/`](extension/). Le guide détaillé par navigateur est dans [extension/README.md](extension/README.md).
+
+### Chrome / Edge / Brave / Opera (le plus simple — 30 s)
 
 1. Lance Ultimate Creator App (l'extension dialogue avec elle)
-2. Ouvre `chrome://extensions` (ou `edge://`, `opera://`, `brave://`)
+2. Ouvre `chrome://extensions` (ou `edge://`, `brave://`, `opera://`)
 3. Active **Mode développeur** en haut à droite
 4. Clique **Charger l'extension non empaquetée**
 5. Sélectionne le dossier `extension/`
 6. Va sur YouTube — un bouton orange "Télécharger" apparaît
+
+### Firefox
+
+`about:debugging#/runtime/this-firefox` → **Charger un module complémentaire temporaire** → choisis `extension/manifest.json`.
+
+### Safari (macOS)
+
+Safari ne charge pas le format Chrome directement, il faut un projet Xcode. Deux chemins :
+
+- **Sans Xcode** — télécharge `UltimateCreatorExtension-unsigned.app.zip` depuis la [dernière release](https://github.com/espinjulian005-lgtm/ultimate-creator-app/releases/latest), lance l'app une fois, active "Autoriser les extensions non signées" dans le menu Développement de Safari (étapes complètes dans [extension/README.md](extension/README.md#safari)).
+- **Avec Xcode** — sur ton Mac : `./scripts/convert-safari.sh` génère le projet Xcode dans `safari-build/` que tu compiles toi-même.
+
+⚠️ Sans compte Apple Developer (99 $/an), Safari oblige à recocher "Autoriser les extensions non signées" à chaque redémarrage. C'est une limitation Apple, pas du projet.
 
 ![Extension](docs/screenshots/02-extension.png)
 *<sub>Capture du bouton sur YouTube</sub>*

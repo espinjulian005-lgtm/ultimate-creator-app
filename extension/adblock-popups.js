@@ -4,13 +4,20 @@
 (function () {
   const SETTINGS_DEFAULTS = { block_popups: true };
   let enabled = true;
+  // Safari/older browsers may not expose chrome.storage in content scripts —
+  // fall back to the default in that case.
+  const api = (typeof browser !== 'undefined' ? browser : (typeof chrome !== 'undefined' ? chrome : null));
   try {
-    chrome.storage.sync.get(SETTINGS_DEFAULTS, (s) => {
-      enabled = s.block_popups !== false;
-    });
-    chrome.storage.onChanged.addListener((c) => {
-      if (c.block_popups) enabled = c.block_popups.newValue;
-    });
+    if (api && api.storage && api.storage.sync) {
+      api.storage.sync.get(SETTINGS_DEFAULTS, (s) => {
+        enabled = s && s.block_popups !== false;
+      });
+      if (api.storage.onChanged) {
+        api.storage.onChanged.addListener((c) => {
+          if (c.block_popups) enabled = c.block_popups.newValue;
+        });
+      }
+    }
   } catch (e) {}
 
   // Snapshot the original

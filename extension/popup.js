@@ -76,10 +76,12 @@ document.querySelectorAll('.switch').forEach((sw) => {
     };
     if (rulesetMap[k]) {
       try {
-        const action = v
-          ? { enableRulesetIds: [rulesetMap[k]] }
-          : { disableRulesetIds: [rulesetMap[k]] };
-        await chrome.declarativeNetRequest.updateEnabledRulesets(action);
+        if (chrome.declarativeNetRequest && chrome.declarativeNetRequest.updateEnabledRulesets) {
+          const action = v
+            ? { enableRulesetIds: [rulesetMap[k]] }
+            : { disableRulesetIds: [rulesetMap[k]] };
+          await chrome.declarativeNetRequest.updateEnabledRulesets(action);
+        }
       } catch (e) { console.warn(e); }
     }
     refreshStats();
@@ -89,7 +91,9 @@ document.querySelectorAll('.switch').forEach((sw) => {
 // ============ Stats ============
 async function refreshStats() {
   try {
-    if (!chrome.declarativeNetRequest.getMatchedRules) {
+    // Safari does not implement getMatchedRules; check the parent first to
+    // avoid throwing on browsers without declarativeNetRequest at all.
+    if (!chrome.declarativeNetRequest || !chrome.declarativeNetRequest.getMatchedRules) {
       statsEl.textContent = '';
       return;
     }

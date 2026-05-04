@@ -10,14 +10,24 @@
   };
 
   let settings = SETTINGS_DEFAULTS;
-  chrome.storage.sync.get(SETTINGS_DEFAULTS, (s) => {
-    settings = { ...SETTINGS_DEFAULTS, ...s };
+  const api = (typeof browser !== 'undefined' ? browser : (typeof chrome !== 'undefined' ? chrome : null));
+  try {
+    if (api && api.storage && api.storage.sync) {
+      api.storage.sync.get(SETTINGS_DEFAULTS, (s) => {
+        settings = { ...SETTINGS_DEFAULTS, ...(s || {}) };
+        if (settings.youtube_ads) startBlocking();
+      });
+      if (api.storage.onChanged) {
+        api.storage.onChanged.addListener((changes) => {
+          for (const k in changes) settings[k] = changes[k].newValue;
+        });
+      }
+    } else {
+      if (settings.youtube_ads) startBlocking();
+    }
+  } catch (e) {
     if (settings.youtube_ads) startBlocking();
-  });
-
-  chrome.storage.onChanged.addListener((changes) => {
-    for (const k in changes) settings[k] = changes[k].newValue;
-  });
+  }
 
   // CSS to hide ad-related DOM
   const HIDE_CSS = `

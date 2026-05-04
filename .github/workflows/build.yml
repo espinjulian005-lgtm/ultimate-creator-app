@@ -164,9 +164,76 @@ jobs:
             dist/*.AppImage
             dist/*.deb
 
+  # ============ Safari Web Extension (Xcode project + unsigned .app) ============
+  # Non-blocking: if this job fails, the release still ships with the desktop builds.
+  build-safari-extension:
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Convert Chrome extension to Safari Web Extension
+        run: |
+          set -e
+          mkdir -p safari-build
+          xcrun safari-web-extension-converter \
+            "$(pwd)/extension" \
+            --project-location "$(pwd)/safari-build" \
+            --app-name "Ultimate Creator Extension" \
+            --bundle-identifier "com.julianespin.ultimate-creator-extension" \
+            --no-prompt \
+            --copy-resources \
+            --force
+          ls -la safari-build
+
+      - name: Build unsigned Safari extension (.app)
+        run: |
+          set -e
+          PROJECT=$(find safari-build -maxdepth 3 -name '*.xcodeproj' | head -n 1)
+          if [ -z "$PROJECT" ]; then
+            echo "❌ No .xcodeproj produced by the converter"; exit 1
+          fi
+          echo "Building $PROJECT"
+          xcodebuild \
+            -project "$PROJECT" \
+            -scheme "Ultimate Creator Extension (macOS)" \
+            -configuration Release \
+            -derivedDataPath build-safari \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build || true
+          # Locate any .app produced; tolerate scheme name variations.
+          APP=$(find build-safari -name '*.app' -path '*Release*' | head -n 1)
+          if [ -z "$APP" ]; then
+            echo "⚠️  Build did not produce a .app — shipping Xcode project only."
+          else
+            echo "App: $APP"
+            ditto -c -k --keepParent "$APP" "safari-build/UltimateCreatorExtension-unsigned.app.zip"
+          fi
+
+      - name: Package Xcode project
+        run: |
+          set -e
+          cd safari-build
+          ditto -c -k --keepParent "Ultimate Creator Extension" "../UltimateCreatorExtension-Xcode-project.zip" 2>/dev/null \
+            || zip -r "../UltimateCreatorExtension-Xcode-project.zip" "Ultimate Creator Extension"
+          cd ..
+          ls -la UltimateCreatorExtension-Xcode-project.zip
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-extension
+          path: |
+            UltimateCreatorExtension-Xcode-project.zip
+            safari-build/UltimateCreatorExtension-unsigned.app.zip
+          if-no-files-found: warn
+
   # ============ Create GitHub Release on tags ============
   release:
-    needs: [build-mac, build-windows, build-linux]
+    needs: [build-mac, build-windows, build-linux, build-safari-extension]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -187,6 +254,7 @@ jobs:
             artifacts/macos-dmg/*
             artifacts/windows-installer/*
             artifacts/linux-appimage/*
+            artifacts/safari-extension/*
           generate_release_notes: true
           draft: false
           prerelease: false
